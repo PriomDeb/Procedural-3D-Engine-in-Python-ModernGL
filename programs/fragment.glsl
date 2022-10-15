@@ -45,10 +45,13 @@ vec2 map(vec3 p){
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
 
+    p.x = -abs(p.x) + 20;
+
 //    pMod1(p.z, 15);
 
     vec3 pr = p;
     pr.y -= 15.0;
+    pR(pr.xy, 0.6);
     pr.x -= 18.0;
     float roofDist = fBox2(pr.xy, vec2(20, 0.3));
     float roofID = 3.0;
@@ -100,7 +103,7 @@ vec3 getNormal(vec3 p){
 }
 
 vec3 getLight(vec3 p, vec3 rd, vec3 color){
-    vec3 lightPos = vec3(20.0, 40.0, -30.0);
+    vec3 lightPos = vec3(10, 55, -20);
     vec3 L = normalize(lightPos - p);
     vec3 N = getNormal(p);
     vec3 V = -rd;
