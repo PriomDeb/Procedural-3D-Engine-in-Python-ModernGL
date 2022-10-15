@@ -14,6 +14,17 @@ vec2 fOpUnionID(vec2 res1, vec2 res2){
     return (res1.x < res2.x) ? res1 : res2;
 }
 
+vec2 fOpDifferenceID(vec2 res1, vec2 res2){
+    return (res1.x > -res2.x) ? res1 : vec2(-res2.x, res2.y);
+}
+
+vec2 fOpDifferenceColumnsID(vec2 res1, vec2 res2, float r, float n){
+    float dist = fOpDifferenceColumns(res1.x, res2.x, r, n);
+    return (res1.x > -res2.x) ? vec2(dist, res1.y) : vec2(dist, res2.y);
+}
+
+
+
 
 
 vec2 map(vec3 p){
@@ -38,12 +49,16 @@ vec2 map(vec3 p){
     float cylinderID = 3.0;
     vec2 cylinder = vec2(cylinderDist, cylinderID);
 
-    
+    // Wall
+    float wallDist = fBox2(p.xy, vec2(1, 15));
+    float wallID = 3.0;
+    vec2 wall = vec2(wallDist, wallID);
 
     // Result
     vec2 res;
-    res = cylinder;
+//    res = wall;
     res = fOpUnionID(box, cylinder);
+    res = fOpDifferenceColumnsID(wall, res, 0.6, 3.0);
     res = fOpUnionID(res, plane);
     return res;
 }
@@ -112,7 +127,7 @@ void mouseControl(inout vec3 ro){
 
 void render(inout vec3 col, in vec2 uv){
 //    vec3 ro = vec3(3.0, 3.0, -3.0);
-    vec3 ro = vec3(14.0, 3.0, -14.0);
+    vec3 ro = vec3(20, 3.0, -20);
     mouseControl(ro);
     vec3 lookAt = vec3(0, 0, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
