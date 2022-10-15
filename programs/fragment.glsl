@@ -45,6 +45,15 @@ vec2 map(vec3 p){
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
 
+//    pMod1(p.z, 15);
+
+    vec3 pr = p;
+    pr.y -= 15.0;
+    pr.x -= 18.0;
+    float roofDist = fBox2(pr.xy, vec2(20, 0.3));
+    float roofID = 3.0;
+    vec2 roof = vec2(roofDist, roofID);
+
     // Box
     float boxDist = fBox(p, vec3(3, 9, 4));
     float boxID = 3.0;
@@ -67,6 +76,7 @@ vec2 map(vec3 p){
 //    res = wall;
     res = fOpUnionID(box, cylinder);
     res = fOpDifferenceColumnsID(wall, res, 0.6, 3.0);
+    res = fOpUnionChamferID(res, roof, 0.9);
     res = fOpUnionStairsID(res, plane, 4.0, 5.0);
     return res;
 }
@@ -135,7 +145,7 @@ void mouseControl(inout vec3 ro){
 
 void render(inout vec3 col, in vec2 uv){
 //    vec3 ro = vec3(3.0, 3.0, -3.0);
-    vec3 ro = vec3(20, 3.0, -20);
+    vec3 ro = vec3(30, 3.0, -30);
     mouseControl(ro);
     vec3 lookAt = vec3(0, 0, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
