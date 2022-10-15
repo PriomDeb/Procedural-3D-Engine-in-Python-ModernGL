@@ -1,6 +1,6 @@
 #version 330 core
 #include hg_sdf.glsl
-layout(location = 0) out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
 
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
@@ -46,6 +46,14 @@ vec2 map(vec3 p){
     float planeID = 2.0;
     vec2 plane = vec2(planeDist, planeID);
 
+    vec3 pt = p + 0.2;
+    pt.y -= 8;
+    pR(pt.yx, 4.0 * u_time);
+    pR(pt.yz, 0.3 * u_time);
+    float torusDist = fTorus(pt, 0.7, 16.0);
+    float torusID = 5.0;
+    vec2 torus = vec2(torusDist, torusID);
+
     // Sphere
     vec3 ps = p + 0.2;
     ps.y -= 8;
@@ -67,7 +75,7 @@ vec2 map(vec3 p){
     vec2 roof = vec2(roofDist, roofID);
 
     // Box
-    float boxDist = fBox(p, vec3(3, 9, 4));
+    float boxDist = fBoxCheap(p, vec3(3, 9, 4));
     float boxID = 3.0;
     vec2 box = vec2(boxDist, boxID);
 
@@ -87,9 +95,10 @@ vec2 map(vec3 p){
     vec2 res;
     res = fOpUnionID(box, cylinder);
     res = fOpDifferenceColumnsID(wall, res, 0.6, 3.0);
-//    res = fOpUnionChamferID(res, roof, 0.9);
+    res = fOpUnionChamferID(res, roof, 0.6);
     res = fOpUnionStairsID(res, plane, 4.0, 5.0);
     res = fOpUnionID(res, sphere);
+    res = fOpUnionID(res, torus);
     return res;
 }
 
@@ -122,11 +131,12 @@ vec3 getLight(vec3 p, vec3 rd, vec3 color){
     vec3 specular = specColor * pow(clamp(dot(R, V), 0.0, 1.0), 10.0);
     vec3 diffuse = color * clamp(dot(L, N), 0.0, 1.0);
     vec3 ambient = color * 0.05;
+    vec3 fresnel = 0.25 * color * pow(1.0 + dot(rd, N), 3.0);
 
     // Shadows
     float d = rayMarch(p + N * 0.02, normalize(lightPos)).x;
-    if (d < length(lightPos - p)) return ambient;
-    return diffuse + ambient + specular;
+    if (d < length(lightPos - p)) return ambient + fresnel;
+    return diffuse + ambient + specular + fresnel;
 }
 
 vec3 getMaterial(vec3 p, float id){
@@ -138,9 +148,9 @@ vec3 getMaterial(vec3 p, float id){
         m = vec3(0.2 + 0.4 * mod(floor(p.x) + floor(p.z), 2.0)); break;
         case 3:
         m = vec3(0.7, 0.8, 0.9); break;
-//        case 4:
-//        vec2 i = step(fract(0.5 * p.xz), vec2(1.0 / 10.0));
-//        m = ((1.0 - i.x) * (1.0 - i.y)) * vec3(0.37, 0.12, 0.0); break;
+        case 4:
+        vec2 i = step(fract(0.5 * p.xz), vec2(1.0 / 10.0));
+        m = ((1.0 - i.x) * (1.0 - i.y)) * vec3(0.37, 0.12, 0.0); break;
     }
     return m;
 }
@@ -154,13 +164,12 @@ mat3 getCam(vec3 ro, vec3 lookAt){
 
 void mouseControl(inout vec3 ro){
     vec2 m = u_mouse / u_resolution;
-    pR(ro.yz, m.y * PI * 0.5 - 0.5);
+    pR(ro.yz, m.y * PI * 1 - 2);
     pR(ro.xz, m.x * TAU);
 }
 
 void render(inout vec3 col, in vec2 uv){
-//    vec3 ro = vec3(3.0, 3.0, -3.0);
-    vec3 ro = vec3(46, 3.0, -46);
+    vec3 ro = vec3(46, 19.0, -46);
     mouseControl(ro);
 
     vec3 lookAt = vec3(0, 1, 0);
