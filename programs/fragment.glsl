@@ -105,7 +105,7 @@ vec3 getNormal(vec3 p){
 }
 
 vec3 getLight(vec3 p, vec3 rd, vec3 color){
-    vec3 lightPos = vec3(10, 55, -20);
+    vec3 lightPos = vec3(10.0, 55.0, -20.0);
     vec3 L = normalize(lightPos - p);
     vec3 N = getNormal(p);
     vec3 V = -rd;
@@ -155,7 +155,8 @@ void render(inout vec3 col, in vec2 uv){
 //    vec3 ro = vec3(3.0, 3.0, -3.0);
     vec3 ro = vec3(46, 3.0, -46);
     mouseControl(ro);
-    vec3 lookAt = vec3(0, 0, 0);
+
+    vec3 lookAt = vec3(0, 1, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
 
     vec2 object = rayMarch(ro, rd);
@@ -166,9 +167,9 @@ void render(inout vec3 col, in vec2 uv){
         vec3 material = getMaterial(p, object.y);
         col += getLight(p, rd, material);
         // Fog
-        col = mix(col, background, 1.0 - exp(-0.0008 * object.x * object.x));
+        col = mix(col, background, 1.0 - exp(-0.00002 * object.x * object.x));
     } else{
-        col += background - max(0.95 * rd.y, 0.0);
+        col += background - max(0.9 * rd.y, 0.0);
     }
 }
 
