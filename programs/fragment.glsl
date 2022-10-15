@@ -17,15 +17,30 @@ vec2 fOpUnionID(vec2 res1, vec2 res2){
 
 
 vec2 map(vec3 p){
-    float planeDist = fPlane(p, vec3(0, 1, 0), 1.0);
+    float planeDist = fPlane(p, vec3(0, 1, 0), 14.0);
     float planeID = 2.0;
     vec2 plane = vec2(planeDist, planeID);
+
     // Sphere
     float sphereDist = fSphere(p, 1.0);
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
+
+    // Box
+    float boxDist = fBox(p, vec3(3, 9, 4));
+    float boxID = 3.0;
+    vec2 box = vec2(boxDist, boxID);
+
+    // Cylinder
+    float cylinderDist = fCylinder(p, 4, 9);
+    float cylinderID = 3.0;
+    vec2 cylinder = vec2(cylinderDist, cylinderID);
+
     // Result
-    vec2 res = fOpUnionID(sphere, plane);
+    vec2 res;
+    res = cylinder;
+    res = fOpUnionID(box, cylinder);
+    res = fOpUnionID(res, plane);
     return res;
 }
 
@@ -72,6 +87,8 @@ vec3 getMaterial(vec3 p, float id){
         m = vec3(0.9, 0.0, 0.0); break;
         case 2:
         m = vec3(0.2 + 0.4 * mod(floor(p.x) + floor(p.z), 2.0)); break;
+        case 3:
+        m = vec3(0.7, 0.8, 0.9); break;
     }
     return m;
 }
@@ -90,7 +107,8 @@ void mouseControl(inout vec3 ro){
 }
 
 void render(inout vec3 col, in vec2 uv){
-    vec3 ro = vec3(3.0, 3.0, -3.0);
+//    vec3 ro = vec3(3.0, 3.0, -3.0);
+    vec3 ro = vec3(14.0, 3.0, -14.0);
     mouseControl(ro);
     vec3 lookAt = vec3(0, 0, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
