@@ -9,6 +9,7 @@ const float MAX_DIST = 500;
 const float EPSILON = 0.001;
 
 vec2 map(vec3 p){
+    p = mod(p, 4.0) - 4.0 * 0.5;
     // Sphere
     float sphereDist = length(p) - 1.0;
     float sphereID = 1.0;
