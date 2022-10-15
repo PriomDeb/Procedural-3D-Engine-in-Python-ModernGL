@@ -45,15 +45,17 @@ vec2 map(vec3 p){
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
 
+    pMirrorOctant(p.xz, vec2(50, 50));
     p.x = -abs(p.x) + 20;
 
 //    pMod1(p.z, 15);
 
     vec3 pr = p;
-    pr.y -= 15.0;
+    pr.y -= 15.5;
     pR(pr.xy, 0.6);
     pr.x -= 18.0;
-    float roofDist = fBox2(pr.xy, vec2(20, 0.3));
+
+    float roofDist = fBox2Cheap(pr.xy, vec2(20, 0.3));
     float roofID = 3.0;
     vec2 roof = vec2(roofDist, roofID);
 
@@ -129,6 +131,9 @@ vec3 getMaterial(vec3 p, float id){
         m = vec3(0.2 + 0.4 * mod(floor(p.x) + floor(p.z), 2.0)); break;
         case 3:
         m = vec3(0.7, 0.8, 0.9); break;
+//        case 4:
+//        vec2 i = step(fract(0.5 * p.xz), vec2(1.0 / 10.0));
+//        m = ((1.0 - i.x) * (1.0 - i.y)) * vec3(0.37, 0.12, 0.0); break;
     }
     return m;
 }
@@ -148,7 +153,7 @@ void mouseControl(inout vec3 ro){
 
 void render(inout vec3 col, in vec2 uv){
 //    vec3 ro = vec3(3.0, 3.0, -3.0);
-    vec3 ro = vec3(30, 3.0, -30);
+    vec3 ro = vec3(46, 3.0, -46);
     mouseControl(ro);
     vec3 lookAt = vec3(0, 0, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
