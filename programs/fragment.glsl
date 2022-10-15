@@ -55,17 +55,27 @@ vec3 getLight(vec3 p, vec3 rd, vec3 color){
     return diffuse;
 }
 
+vec3 getMaterial(vec3 p, float id){
+    vec3 m;
+    switch (int(id)){
+        case 1:
+        m = vec3(0.9, 0.9, 0.0); break;
+        case 2:
+        m = vec3(0.0, 0.5, 0.5); break;
+    }
+    return m;
+}
+
 void render(inout vec3 col, in vec2 uv){
-//    col.rg += uv;
     vec3 ro = vec3(0.0, 0.0, -3.0);
     vec3 rd = normalize(vec3(uv, FOV));
 
     vec2 object = rayMarch(ro, rd);
 
     if (object.x < MAX_DIST){
-//        col += 3.0 / object.x;
         vec3 p = ro + object.x * rd;
-        col += getLight(p, rd, vec3(1));
+        vec3 material = getMaterial(p, object.y);
+        col += getLight(p, rd, material);
     }
 }
 
