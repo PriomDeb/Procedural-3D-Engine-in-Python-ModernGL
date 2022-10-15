@@ -151,6 +151,9 @@ vec3 getMaterial(vec3 p, float id){
         case 4:
         vec2 i = step(fract(0.5 * p.xz), vec2(1.0 / 10.0));
         m = ((1.0 - i.x) * (1.0 - i.y)) * vec3(0.37, 0.12, 0.0); break;
+        case 5:
+        vec2 n = step(fract(u_time * p.yz), vec2(u_time * 2 / 10.0));
+        m = ((1.0 - n.x) * (u_time - n.x)) * vec3(u_time * 2, u_time * 0.12, u_time); break;
     }
     return m;
 }
