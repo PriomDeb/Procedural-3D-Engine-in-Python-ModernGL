@@ -40,6 +40,19 @@ vec2 rayMarch(vec3 ro, vec3 rd){
     return object;
 }
 
+vec3 getNormal(vec3 p){
+    vec2 e = vec2(EPSILON, 0.0);
+    vec3 n = vec3(map(p).x) - vec3(map(p - e.xyy).x, map(p - e.yxy).x, map(p - e.yyx).x);
+    return normalize(n);
+}
+
+vec3 getLight(vec3 p, vec3 rd, vec3 color){
+    vec3 lightPos = vec3(20.0, 40.0, -30.0);
+    vec3 L = normalize(lightPos - p);
+    vec3 N = getNormal(p);
+    return N;
+}
+
 void render(inout vec3 col, in vec2 uv){
 //    col.rg += uv;
     vec3 ro = vec3(0.0, 0.0, -3.0);
@@ -48,9 +61,13 @@ void render(inout vec3 col, in vec2 uv){
     vec2 object = rayMarch(ro, rd);
 
     if (object.x < MAX_DIST){
-        col += 3.0 / object.x;
+//        col += 3.0 / object.x;
+        vec3 p = ro + object.x * rd;
+        col += getLight(p, rd, vec3(1));
     }
 }
+
+
 
 void main() {
     vec2 uv = (2.0 * gl_FragCoord.xy - u_resolution.xy) / u_resolution.y;
