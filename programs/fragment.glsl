@@ -50,7 +50,9 @@ vec3 getLight(vec3 p, vec3 rd, vec3 color){
     vec3 lightPos = vec3(20.0, 40.0, -30.0);
     vec3 L = normalize(lightPos - p);
     vec3 N = getNormal(p);
-    return N;
+
+    vec3 diffuse = color * clamp(dot(L, N), 0.0, 1.0);
+    return diffuse;
 }
 
 void render(inout vec3 col, in vec2 uv){
