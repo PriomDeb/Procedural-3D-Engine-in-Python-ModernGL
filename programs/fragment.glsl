@@ -52,6 +52,10 @@ vec3 getLight(vec3 p, vec3 rd, vec3 color){
     vec3 N = getNormal(p);
 
     vec3 diffuse = color * clamp(dot(L, N), 0.0, 1.0);
+
+    // Shadows
+    float d = rayMarch(p + N * 0.02, normalize(lightPos)).x;
+    if (d < length(lightPos - p)) return vec3(0);
     return diffuse;
 }
 
@@ -59,9 +63,9 @@ vec3 getMaterial(vec3 p, float id){
     vec3 m;
     switch (int(id)){
         case 1:
-        m = vec3(0.9, 0.9, 0.0); break;
+        m = vec3(0.9, 0.0, 0.0); break;
         case 2:
-        m = vec3(0.0, 0.5, 0.5); break;
+        m = vec3(0.2 + 0.4 * mod(floor(p.x) + floor(p.z), 2.0)); break;
     }
     return m;
 }
@@ -87,6 +91,8 @@ void main() {
     vec3 col;
     render(col, uv);
 
+    // Gamma correction
+    col = pow(col, vec3(0.4545));
     fragColor = vec4(col, 1.0);
 }
 
