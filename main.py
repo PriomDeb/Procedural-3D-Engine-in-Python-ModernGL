@@ -14,6 +14,7 @@ class App(mglw.WindowConfig):
 
     def render(self, time, frame_time):
         self.ctx.clear()
+        self.program['u_time'] = time
         self.quad.render(self.program)
 
     def mouse_position_event(self, x, y, dx, dy):

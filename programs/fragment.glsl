@@ -4,11 +4,17 @@ layout(location = 0) out vec4 fragColor;
 
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
+uniform float u_time;
 
 const float FOV = 1.0;
 const int MAX_STEPS = 256;
 const float MAX_DIST = 500;
 const float EPSILON = 0.001;
+
+float fDisplace(vec3 p){
+    pR(p.yz, sin(2.0 * u_time));
+    return (sin(p.x + 4.0 * u_time) * sin(p.y + sin(2.0 * u_time)) * sin(p.z + 6.0 * u_time));
+}
 
 vec2 fOpUnionID(vec2 res1, vec2 res2){
     return (res1.x < res2.x) ? res1 : res2;
@@ -41,7 +47,9 @@ vec2 map(vec3 p){
     vec2 plane = vec2(planeDist, planeID);
 
     // Sphere
-    float sphereDist = fSphere(p, 1.0);
+    vec3 ps = p + 0.2;
+    ps.y -= 8;
+    float sphereDist = fSphere(ps, 13.0 + fDisplace(p));
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
 
@@ -51,12 +59,11 @@ vec2 map(vec3 p){
 //    pMod1(p.z, 15);
 
     vec3 pr = p;
-    pr.y -= 15.5;
+    pr.y -= 15.7;
     pR(pr.xy, 0.6);
     pr.x -= 18.0;
-
-    float roofDist = fBox2Cheap(pr.xy, vec2(20, 0.3));
-    float roofID = 3.0;
+    float roofDist = fBox2Cheap(pr.xy, vec2(20, 0.5));
+    float roofID = 4.0;
     vec2 roof = vec2(roofDist, roofID);
 
     // Box
@@ -72,17 +79,17 @@ vec2 map(vec3 p){
     vec2 cylinder = vec2(cylinderDist, cylinderID);
 
     // Wall
-    float wallDist = fBox2(p.xy, vec2(1, 15));
+    float wallDist = fBox2Cheap(p.xy, vec2(1, 15));
     float wallID = 3.0;
     vec2 wall = vec2(wallDist, wallID);
 
     // Result
     vec2 res;
-//    res = wall;
     res = fOpUnionID(box, cylinder);
     res = fOpDifferenceColumnsID(wall, res, 0.6, 3.0);
-    res = fOpUnionChamferID(res, roof, 0.9);
+//    res = fOpUnionChamferID(res, roof, 0.9);
     res = fOpUnionStairsID(res, plane, 4.0, 5.0);
+    res = fOpUnionID(res, sphere);
     return res;
 }
 
