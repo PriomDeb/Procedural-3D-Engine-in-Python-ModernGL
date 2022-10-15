@@ -50,13 +50,18 @@ vec3 getLight(vec3 p, vec3 rd, vec3 color){
     vec3 lightPos = vec3(20.0, 40.0, -30.0);
     vec3 L = normalize(lightPos - p);
     vec3 N = getNormal(p);
+    vec3 V = -rd;
+    vec3 R = reflect(-L, N);
 
+    vec3 specColor = vec3(0.5);
+    vec3 specular = specColor * pow(clamp(dot(R, V), 0.0, 1.0), 10.0);
     vec3 diffuse = color * clamp(dot(L, N), 0.0, 1.0);
+    vec3 ambient = color * 0.05;
 
     // Shadows
     float d = rayMarch(p + N * 0.02, normalize(lightPos)).x;
-    if (d < length(lightPos - p)) return vec3(0);
-    return diffuse;
+    if (d < length(lightPos - p)) return ambient;
+    return diffuse + ambient + specular;
 }
 
 vec3 getMaterial(vec3 p, float id){
@@ -70,9 +75,17 @@ vec3 getMaterial(vec3 p, float id){
     return m;
 }
 
+mat3 getCam(vec3 ro, vec3 lookAt){
+    vec3 camF = normalize(vec3(lookAt - ro));
+    vec3 camR = normalize(cross(vec3(0, 1, 0), camF));
+    vec3 camU = cross(camF, camR);
+    return mat3(camR, camU, camF);
+}
+
 void render(inout vec3 col, in vec2 uv){
-    vec3 ro = vec3(0.0, 0.0, -3.0);
-    vec3 rd = normalize(vec3(uv, FOV));
+    vec3 ro = vec3(3.0, 3.0, -3.0);
+    vec3 lookAt = vec3(0, 0, 0);
+    vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
 
     vec2 object = rayMarch(ro, rd);
 
