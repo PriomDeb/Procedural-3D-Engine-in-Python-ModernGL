@@ -1,4 +1,5 @@
 #version 330 core
+#include hg_sdf.glsl
 layout(location = 0) out vec4 fragColor;
 
 uniform vec2 u_resolution;
@@ -8,14 +9,22 @@ const int MAX_STEPS = 256;
 const float MAX_DIST = 500;
 const float EPSILON = 0.001;
 
+vec2 fOpUnionID(vec2 res1, vec2 res2){
+    return (res1.x < res2.x) ? res1 : res2;
+}
+
+
+
 vec2 map(vec3 p){
-    p = mod(p, 4.0) - 4.0 * 0.5;
+    float planeDist = fPlane(p, vec3(0, 1, 0), 1.0);
+    float planeID = 2.0;
+    vec2 plane = vec2(planeDist, planeID);
     // Sphere
-    float sphereDist = length(p) - 1.0;
+    float sphereDist = fSphere(p, 1.0);
     float sphereID = 1.0;
     vec2 sphere = vec2(sphereDist, sphereID);
     // Result
-    vec2 res = sphere;
+    vec2 res = fOpUnionID(sphere, plane);
     return res;
 }
 
