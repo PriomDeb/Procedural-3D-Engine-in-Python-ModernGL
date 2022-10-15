@@ -32,9 +32,13 @@ vec2 map(vec3 p){
     vec2 box = vec2(boxDist, boxID);
 
     // Cylinder
-    float cylinderDist = fCylinder(p, 4, 9);
+    vec3 pc = p;
+    pc.y -= 9.0;
+    float cylinderDist = fCylinder(pc.yxz, 4, 3);
     float cylinderID = 3.0;
     vec2 cylinder = vec2(cylinderDist, cylinderID);
+
+    
 
     // Result
     vec2 res;
