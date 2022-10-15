@@ -16,6 +16,9 @@ class App(mglw.WindowConfig):
         self.ctx.clear()
         self.quad.render(self.program)
 
+    def mouse_position_event(self, x, y, dx, dy):
+        self.program['u_mouse'] = (x, y)
+
 
 if __name__ == '__main__':
     mglw.run_window_config(App)

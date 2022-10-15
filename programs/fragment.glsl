@@ -3,6 +3,7 @@
 layout(location = 0) out vec4 fragColor;
 
 uniform vec2 u_resolution;
+uniform vec2 u_mouse;
 
 const float FOV = 1.0;
 const int MAX_STEPS = 256;
@@ -82,8 +83,15 @@ mat3 getCam(vec3 ro, vec3 lookAt){
     return mat3(camR, camU, camF);
 }
 
+void mouseControl(inout vec3 ro){
+    vec2 m = u_mouse / u_resolution;
+    pR(ro.yz, m.y * PI * 0.5 - 0.5);
+    pR(ro.xz, m.x * TAU);
+}
+
 void render(inout vec3 col, in vec2 uv){
     vec3 ro = vec3(3.0, 3.0, -3.0);
+    mouseControl(ro);
     vec3 lookAt = vec3(0, 0, 0);
     vec3 rd = getCam(ro, lookAt) * normalize(vec3(uv, FOV));
 
