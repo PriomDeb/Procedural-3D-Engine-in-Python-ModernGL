@@ -76,10 +76,13 @@ void render(inout vec3 col, in vec2 uv){
 
     vec2 object = rayMarch(ro, rd);
 
+    vec3 background = vec3(0.5, 0.8, 0.9);
     if (object.x < MAX_DIST){
         vec3 p = ro + object.x * rd;
         vec3 material = getMaterial(p, object.y);
         col += getLight(p, rd, material);
+    } else{
+        col += background;
     }
 }
 
