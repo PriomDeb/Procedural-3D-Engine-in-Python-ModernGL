@@ -3,6 +3,7 @@ import moderngl_window as mglw
 class App(mglw.WindowConfig):
     window_size = 1600, 900
     resource_dir = 'programs'
+    title = "Priom 3D Engine v1.0"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
