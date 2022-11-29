@@ -64,7 +64,7 @@ vec2 map(vec3 p){
     pMirrorOctant(p.xz, vec2(50, 50));
     p.x = -abs(p.x) + 20;
 
-//    pMod1(p.z, 15);
+    pMod1(p.z, 15);
 
     vec3 pr = p;
     pr.y -= 15.7;
